@@ -452,6 +452,7 @@ export class AdminShellComponent implements OnInit {
     { path: '/tours', label: 'Tournées', icon: 'ri-truck-line' },
     { path: '/stats', label: 'Statistiques', icon: 'ri-bar-chart-box-line' },
     { path: '/users', label: 'Utilisateurs', icon: 'ri-user-line' },
+    { path: '/chat', label: 'Messagerie', icon: 'ri-chat-3-line' },
     { path: '/awareness', label: 'Sensibilisation', icon: 'ri-book-open-line' },
     { path: '/settings', label: 'Paramètres', icon: 'ri-settings-4-line' }
   ];
@@ -466,6 +467,7 @@ export class AdminShellComponent implements OnInit {
     '/tours': 'Tournées',
     '/stats': 'Statistiques',
     '/users': 'Utilisateurs',
+    '/chat': 'Messagerie',
     '/awareness': 'Sensibilisation',
     '/settings': 'Paramètres'
   };

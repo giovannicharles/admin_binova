@@ -12,7 +12,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./shared/components/shell/shell.component').then(m => m.AdminShellComponent),
-    // canActivate: [authGuard, adminGuard],
+    canActivate: [authGuard, adminGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.AdminDashboardComponent) },
@@ -23,6 +23,7 @@ export const routes: Routes = [
       { path: 'stats', loadComponent: () => import('./features/stats/stats.component').then(m => m.AdminStatsComponent) },
       { path: 'users', loadComponent: () => import('./features/users/users.component').then(m => m.AdminUsersComponent) },
       { path: 'awareness', loadComponent: () => import('./features/awareness/awareness.component').then(m => m.AdminAwarenessComponent) },
+      { path: 'chat', loadComponent: () => import('./features/chat/chat.component').then(m => m.AdminChatComponent) },
       { path: 'settings', loadComponent: () => import('./features/settings/settings.component').then(m => m.AdminSettingsComponent) }
     ]
   },

@@ -239,14 +239,73 @@ Chart.register(...registerables);
               <i class="ri-flashlight-line" style="font-size: 18px;"></i>
               Simulateur IoT
             </button>
-            <button class="quick-action-btn" (click)="exportReport()">
-              <i class="ri-file-chart-line" style="font-size: 18px;"></i>
-              Export PDF
+            <button class="quick-action-btn" (click)="exportData('bins')">
+              <i class="ri-download-line" style="font-size: 18px;"></i>
+              Export Bacs
             </button>
-            <a routerLink="/settings" class="quick-action-btn">
-              <i class="ri-settings-4-line" style="font-size: 18px;"></i>
-              Paramètres
-            </a>
+            <button class="quick-action-btn" (click)="exportData('users')">
+              <i class="ri-download-line" style="font-size: 18px;"></i>
+              Export Users
+            </button>
+          </div>
+        </div>
+
+        <!-- Innovative Ranking System -->
+        <div class="admin-card card-hover ranking-card">
+          <div class="card-header">
+            <h3><i class="ri-trophy-line" style="font-size: 18px; margin-right: 6px;"></i> Classement Éco-Citoyens</h3>
+            <div class="ranking-tabs">
+              <button class="ranking-tab" [class.active]="rankingTab() === 'points'" (click)="rankingTab.set('points')">Points</button>
+              <button class="ranking-tab" [class.active]="rankingTab() === 'reports'" (click)="rankingTab.set('reports')">Signalements</button>
+              <button class="ranking-tab" [class.active]="rankingTab() === 'streak'" (click)="rankingTab.set('streak')">Série</button>
+            </div>
+          </div>
+          <div class="ranking-podium">
+            @if (topCitizens().length >= 3) {
+              <div class="podium-container">
+                <!-- 2nd Place -->
+                <div class="podium-item silver">
+                  <div class="podium-rank">2</div>
+                  <div class="podium-avatar">{{ topCitizens()[1]?.name?.charAt(0) || '?' }}</div>
+                  <div class="podium-name">{{ topCitizens()[1]?.name || 'N/A' }}</div>
+                  <div class="podium-score">{{ getRankingScore(topCitizens()[1]) }}</div>
+                  <div class="podium-bar" style="height: 70%"></div>
+                </div>
+                <!-- 1st Place -->
+                <div class="podium-item gold">
+                  <div class="podium-crown">👑</div>
+                  <div class="podium-rank">1</div>
+                  <div class="podium-avatar">{{ topCitizens()[0]?.name?.charAt(0) || '?' }}</div>
+                  <div class="podium-name">{{ topCitizens()[0]?.name || 'N/A' }}</div>
+                  <div class="podium-score">{{ getRankingScore(topCitizens()[0]) }}</div>
+                  <div class="podium-bar" style="height: 100%"></div>
+                </div>
+                <!-- 3rd Place -->
+                <div class="podium-item bronze">
+                  <div class="podium-rank">3</div>
+                  <div class="podium-avatar">{{ topCitizens()[2]?.name?.charAt(0) || '?' }}</div>
+                  <div class="podium-name">{{ topCitizens()[2]?.name || 'N/A' }}</div>
+                  <div class="podium-score">{{ getRankingScore(topCitizens()[2]) }}</div>
+                  <div class="podium-bar" style="height: 50%"></div>
+                </div>
+              </div>
+            }
+            <div class="ranking-list">
+              @for (citizen of topCitizens().slice(3); track citizen._id; let idx = $index) {
+                <div class="ranking-row card-hover">
+                  <span class="ranking-num">{{ idx + 4 }}</span>
+                  <div class="ranking-avatar">{{ citizen.name?.charAt(0) || '?' }}</div>
+                  <div class="ranking-info">
+                    <div class="ranking-name">{{ citizen.name }}</div>
+                    <div class="ranking-level">{{ citizen.level }}</div>
+                  </div>
+                  <div class="ranking-stats">
+                    <span class="stat-badge">{{ citizen.points || 0 }} pts</span>
+                    <span class="stat-badge">{{ citizen.stats?.reportsSubmitted || 0 }} sign.</span>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
         </div>
       </div>
@@ -554,6 +613,105 @@ Chart.register(...registerables);
       .admin-grid { grid-template-columns: 1fr; }
       .charts-section { grid-template-columns: 1fr; }
     }
+
+    /* Ranking System Styles */
+    .ranking-card { grid-column: span 2; }
+
+    .ranking-tabs {
+      display: flex; gap: 8px;
+      .ranking-tab {
+        padding: 6px 14px; border-radius: var(--radius);
+        background: var(--bg-soft); border: 1px solid var(--border);
+        font-size: 12px; font-weight: 600; color: var(--text-muted);
+        cursor: pointer; transition: all var(--transition);
+        &.active { background: var(--primary-600); color: #fff; border-color: var(--primary-600); }
+      }
+    }
+
+    .ranking-podium { padding: 16px 0; }
+
+    .podium-container {
+      display: flex; justify-content: center; align-items: flex-end;
+      gap: 20px; margin-bottom: 24px; padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .podium-item {
+      display: flex; flex-direction: column; align-items: center;
+      position: relative; width: 80px;
+
+      .podium-crown { font-size: 28px; margin-bottom: 4px; animation: bounce 2s infinite; }
+      .podium-rank {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: var(--bg-soft); border: 2px solid var(--border);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px; font-weight: 700; margin-bottom: 8px;
+      }
+      .podium-avatar {
+        width: 48px; height: 48px; border-radius: 50%;
+        background: var(--primary-600); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 18px; font-weight: 700; margin-bottom: 8px;
+        box-shadow: var(--shadow-soft);
+      }
+      .podium-name {
+        font-size: 12px; font-weight: 600; text-align: center;
+        max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        margin-bottom: 4px;
+      }
+      .podium-score {
+        font-size: 14px; font-weight: 700; color: var(--primary-600);
+        margin-bottom: 8px;
+      }
+      .podium-bar {
+        width: 100%; border-radius: 8px 8px 0 0;
+        transition: height 0.5s ease;
+      }
+
+      &.gold .podium-bar { background: linear-gradient(180deg, #FFD700, #FFA500); }
+      &.silver .podium-bar { background: linear-gradient(180deg, #C0C0C0, #A8A8A8); }
+      &.bronze .podium-bar { background: linear-gradient(180deg, #CD7F32, #B87333); }
+    }
+
+    .ranking-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .ranking-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: var(--radius);
+      background: var(--bg-soft); transition: all var(--transition);
+
+      &:hover { background: var(--border); transform: translateX(4px); }
+    }
+
+    .ranking-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--bg); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: var(--text-muted);
+    }
+
+    .ranking-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--primary-100); color: var(--primary-600);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+    }
+
+    .ranking-info { flex: 1; }
+    .ranking-name { font-size: 13px; font-weight: 600; }
+    .ranking-level { font-size: 11px; color: var(--text-muted); }
+
+    .ranking-stats { display: flex; gap: 8px; }
+    .stat-badge {
+      padding: 4px 10px; border-radius: var(--radius-full);
+      background: var(--primary-50); font-size: 11px; font-weight: 600;
+      color: var(--primary-700);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
   `]
 })
 export class AdminDashboardComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -564,6 +722,8 @@ export class AdminDashboardComponent implements OnInit, OnDestroy, AfterViewInit
   loading = signal(true);
   toasts = signal<any[]>([]);
   reportStats = signal<any>({});
+  topCitizens = signal<any[]>([]);
+  rankingTab = signal('points');
 
   @ViewChild('collectionChart') collectionChart!: ElementRef;
   @ViewChild('wasteTypeChart') wasteTypeChart!: ElementRef;
@@ -587,6 +747,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy, AfterViewInit
 
   ngOnInit() {
     this.loadDashboard();
+    this.loadTopCitizens();
     this.socketService.connect();
 
     this.subs.push(
@@ -621,6 +782,38 @@ export class AdminDashboardComponent implements OnInit, OnDestroy, AfterViewInit
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
+    });
+  }
+
+  loadTopCitizens() {
+    this.http.get(`${environment.apiUrl}/users?role=citizen&limit=10&sort=-points`).subscribe({
+      next: (res: any) => {
+        this.topCitizens.set(res.data || []);
+      },
+      error: () => {}
+    });
+  }
+
+  getRankingScore(citizen: any): string {
+    switch(this.rankingTab()) {
+      case 'points': return `${citizen.points || 0} pts`;
+      case 'reports': return `${citizen.stats?.reportsSubmitted || 0} sign.`;
+      case 'streak': return `${citizen.stats?.loginStreak || 0} jours`;
+      default: return `${citizen.points || 0} pts`;
+    }
+  }
+
+  exportData(type: string) {
+    this.http.get(`${environment.apiUrl}/export/${type}`, { responseType: 'blob' }).subscribe((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `binova-${type}-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      this.showToast(`Export ${type} réussi`, 'info');
+    }, () => {
+      this.showToast(`Erreur lors de l'export ${type}`, 'attention');
     });
   }
 
@@ -672,31 +865,37 @@ export class AdminDashboardComponent implements OnInit, OnDestroy, AfterViewInit
   }
 
   initCharts() {
-    // Initialize collection chart with mock data - inspired by design reference
+    // Initialize collection chart with enhanced data
     if (this.collectionChart) {
       const ctx = this.collectionChart.nativeElement.getContext('2d');
       this.collectionChartInstance = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
           labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
           datasets: [
             {
               label: 'Collectes réelles',
               data: [120, 190, 150, 220, 180, 250, 200],
-              backgroundColor: 'rgba(44, 122, 62, 0.85)',
+              backgroundColor: 'rgba(44, 122, 62, 0.1)',
               borderColor: '#2C7A3E',
-              borderWidth: 2,
-              borderRadius: 6,
-              borderSkipped: false
+              borderWidth: 3,
+              fill: true,
+              tension: 0.4,
+              pointBackgroundColor: '#2C7A3E',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2,
+              pointRadius: 5
             },
             {
               label: 'Objectif',
               data: [150, 180, 180, 200, 200, 220, 220],
-              backgroundColor: 'rgba(0, 210, 255, 0.3)',
+              backgroundColor: 'rgba(0, 210, 255, 0.05)',
               borderColor: '#00D2FF',
               borderWidth: 2,
-              borderRadius: 4,
-              borderSkipped: false
+              borderDash: [5, 5],
+              fill: false,
+              tension: 0.4,
+              pointRadius: 0
             }
           ]
         },
@@ -733,7 +932,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy, AfterViewInit
       });
     }
 
-    // Initialize waste type chart with mock data - inspired by design reference
+    // Initialize waste type chart with enhanced visualization
     if (this.wasteTypeChart) {
       const ctx = this.wasteTypeChart.nativeElement.getContext('2d');
       this.wasteTypeChartInstance = new Chart(ctx, {
@@ -757,7 +956,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy, AfterViewInit
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          cutout: '65%',
           plugins: {
             legend: {
               position: 'bottom',
@@ -777,7 +975,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy, AfterViewInit
               }
             }
           }
-        }
+        } as any
       });
     }
 
