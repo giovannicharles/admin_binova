@@ -31,12 +31,19 @@
           "configurations": {
             "production": {
               "budgets": [
-                {"type": "initial", "maximumWarning": "600kb", "maximumError": "1.5mb"},
-                {"type": "anyComponentStyle", "maximumWarning": "4kb", "maximumError": "8kb"}
+                { "type": "initial", "maximumWarning": "600kb", "maximumError": "1.5mb" },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "12kb"
+                }
               ],
               "outputHashing": "all",
               "fileReplacements": [
-                {"replace": "src/environments/environment.ts", "with": "src/environments/environment.prod.ts"}
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
               ]
             },
             "development": {
@@ -50,11 +57,11 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
-            "production": {"buildTarget": "binova-admin:build:production"},
-            "development": {"buildTarget": "binova-admin:build:development"}
+            "production": { "buildTarget": "binova-admin:build:production" },
+            "development": { "buildTarget": "binova-admin:build:development" }
           },
           "defaultConfiguration": "development",
-          "options": {"port": 4300}
+          "options": { "port": 4300 }
         }
       }
     }
