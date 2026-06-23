@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, adminGuard } from './core/guards/auth.guard';
+import { AdminReportsComponent } from './features/reports/reports.component';
 
 export const routes: Routes = [
   {
@@ -18,7 +19,7 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.AdminDashboardComponent) },
       { path: 'map', loadComponent: () => import('./features/map/map.component').then(m => m.AdminMapComponent) },
       { path: 'bins', loadComponent: () => import('./features/bins/bins.component').then(m => m.AdminBinsComponent) },
-      { path: 'reports', loadComponent: () => import('./features/reports/reports.component').then(m => m.AdminReportsComponent) },
+      { path: 'reports', component: AdminReportsComponent },
       { path: 'tours', loadComponent: () => import('./features/tours/tours.component').then(m => m.AdminToursComponent) },
       { path: 'stats', loadComponent: () => import('./features/stats/stats.component').then(m => m.AdminStatsComponent) },
       { path: 'users', loadComponent: () => import('./features/users/users.component').then(m => m.AdminUsersComponent) },
